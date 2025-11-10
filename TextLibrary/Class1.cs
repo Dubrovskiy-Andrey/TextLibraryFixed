@@ -18,15 +18,15 @@ namespace TextLibrary
         {
             if (mode == 1)
             {
-                string[] words = Text.Split(new char[] { ' ', '\n', '\r', '\t', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] words = Text.Split(new char[] { ' ', '\n', '\r', '\t', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
                 Console.WriteLine($"Количество слов: {words.Length}");
             }
             else if (mode == 2)
             {
-                string[] words = Text.Split(new char[] { ' ', '\n', '\r', '\t', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] words = Text.Split(new char[] { ' ', '\n', '\r', '\t', '.', ',' }, StringSplitOptions.RemoveEmptyEntries);
                 string longest = "";
                 foreach (string w in words)
-                    if (w.Length > longest.Length)
+                    if (w.Length < longest.Length)
                         longest = w;
                 Console.WriteLine($"Самое длинное слово: {longest}");
             }
@@ -46,8 +46,8 @@ namespace TextLibrary
             }
             else if (mode == 4)
             {
-                while (Text.Contains("  "))
-                    Text = Text.Replace("  ", " ");
+                while (Text.Contains(" "))
+                    Text = Text.Replace(" ", "");
                 Console.WriteLine("Текст без лишних пробелов:");
                 Console.WriteLine(Text);
             }
@@ -56,9 +56,9 @@ namespace TextLibrary
                 Console.WriteLine("Введите 1 — верхний регистр, 2 — нижний:");
                 int choice = int.Parse(Console.ReadLine());
                 if (choice == 1)
-                    Text = Text.ToUpper();
-                else
                     Text = Text.ToLower();
+                else
+                    Text = Text.ToUpper();
                 Console.WriteLine("Изменённый текст:");
                 Console.WriteLine(Text);
             }
