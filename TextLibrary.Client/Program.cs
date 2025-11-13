@@ -1,17 +1,19 @@
 ﻿using System;
 using TextLibrary;
+using TextLibrary.Analysis;
+using TextLibrary.Fromatting;
 
 namespace TextLibrary.Client
 {
     internal class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            Console.WriteLine("=== Демонстрация TextLibrary (плохой структуры) ===\n");
+            Console.WriteLine("=== TextLibrary (SOLID версия) ===\n");
 
             while (true)
             {
-                Console.WriteLine("Введите текст (или пустую строку для выхода):");
+                Console.Write("Введите текст (или пустую строку для выхода): ");
                 string input = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(input))
@@ -20,10 +22,7 @@ namespace TextLibrary.Client
                     break;
                 }
 
-                TextProcessor processor = new TextProcessor(input);
-
-                bool backToTextInput = false;
-                while (!backToTextInput)
+                while (true)
                 {
                     Console.WriteLine("\nВыберите режим обработки:");
                     Console.WriteLine("1 — Подсчёт слов");
@@ -37,31 +36,61 @@ namespace TextLibrary.Client
                     Console.Write("Ваш выбор: ");
 
                     string choice = Console.ReadLine();
-
                     if (choice == "0")
                     {
-                        Console.WriteLine("Завершение программы...");
+                        Console.WriteLine("Завершение работы программы...");
                         return;
                     }
-                    else if (choice == "7")
+                    if (choice == "7")
+                        break;
+
+                    if (!int.TryParse(choice, out int mode))
                     {
-                        backToTextInput = true;
+                        Console.WriteLine("Ошибка: введите номер операции!");
                         continue;
                     }
 
-                    if (int.TryParse(choice, out int mode))
+                    ITextOperation operation = mode switch
                     {
-                        processor.ProcessText(mode);
-                    }
-                    else
+                        1 => new WordCountOperation(),
+                        2 => new LongestWordOperation(),
+                        3 => new CharFrequencyOperation(),
+                        4 => new RemoveExtraSpacesOperation(),
+                        5 => ChooseCaseOperation(),
+                        6 => ChooseJustifyOperation(),
+                        _ => null
+                    };
+
+                    if (operation == null)
                     {
-                        Console.WriteLine("Ошибка: введите номер операции!");
+                        Console.WriteLine("Неверный режим обработки!");
+                        continue;
                     }
 
-                    Console.WriteLine("\nНажмите Enter, чтобы продолжить...");
+                    Console.WriteLine("\nРезультат:");
+                    Console.WriteLine(operation.Execute(input));
+
+                    Console.WriteLine("\nНажмите Enter для продолжения...");
                     Console.ReadLine();
                 }
             }
+        }
+
+        private static ITextOperation ChooseCaseOperation()
+        {
+            Console.Write("Введите 1 — верхний регистр, 2 — нижний: ");
+            string choice = Console.ReadLine();
+            return choice == "1"
+                ? new ChangeCaseOperation(true)
+                : new ChangeCaseOperation(false);
+        }
+
+        private static ITextOperation ChooseJustifyOperation()
+        {
+            Console.Write("Введите желаемую длину строки: ");
+            if (!int.TryParse(Console.ReadLine(), out int width))
+                width = 40;
+            return new JustifyTextOperation(width);
         }
     }
 }
